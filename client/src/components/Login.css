@@ -1,0 +1,58 @@
+.outer-login-container {
+  min-height: 100vh;
+  background-color: rgb(245, 245, 220);
+  display: flex;
+  justify-content: center;
+}
+.login-container {
+  text-align: center;
+  padding: 20px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.login-container .hero-logo {
+  max-width: 300px;
+}
+.login-heading {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4a5e4d;
+  margin-bottom: 10px;
+}
+.login-subheading {
+  font-size: 18px;
+  color: #4a5e4d;
+  margin-bottom: 20px;
+}
+.login-input {
+  width: 120%;
+  padding: 15px 20px;
+  margin: 10px 0;
+  border: 1px solid #4a5e4d;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #888;
+  background-color: transparent;
+  box-sizing: border-box;
+}
+.login-input::placeholder {
+  text-align: center;
+  font-size: 12px;
+}
+.login-button {
+  width: 120%;
+  padding: 15px 20px;
+  background-color: #4a5e4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.login-button:hover {
+  background-color: #3a4a3d;
+}
