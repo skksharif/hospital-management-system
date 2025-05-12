@@ -12,7 +12,7 @@ export default function CheckedOut() {
       try {
         const token = localStorage.getItem("token"); // or wherever you're storing it
         const res = await axios.get(
-          "http://localhost:5000/api/doctor/patients?status=checked-out",
+          "https://hospital-management-system-ammf.onrender.com/api/doctor/patients?status=checked-out",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,7 +33,7 @@ export default function CheckedOut() {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:5000/api/doctor/update-patient/${id}`,
+        `https://hospital-management-system-ammf.onrender.com/api/doctor/update-patient/${id}`,
         { status: "checked-out" },
         {
           headers: {

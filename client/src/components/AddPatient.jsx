@@ -32,7 +32,7 @@ export default function AddPatient() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/doctor/add-patient",
+        "https://hospital-management-system-ammf.onrender.com/api/doctor/add-patient",
         formData,
         {
           headers: {

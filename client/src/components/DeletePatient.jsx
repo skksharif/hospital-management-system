@@ -11,7 +11,7 @@ const DeletePatient = () => {
     const fetchPatients = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/api/doctor/patients", {
+        const res = await fetch("https://hospital-management-system-ammf.onrender.com/api/doctor/patients", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
