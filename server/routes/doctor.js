@@ -56,12 +56,10 @@ router.post(
 );
 
 // PATCH route to update patient by ID
-router.patch(
-  "/update-patient/:id",
-  verifyToken(["doctor", "admin"]),
-  async (req, res) => {
+router.patch("/update-patient/:id",verifyToken(["doctor", "admin"]),async (req, res) => {
     try {
       const { id } = req.params;
+      console.log(id);
       const updateFields = req.body;
 
       // If the patient is checked out, set the checkedOutDate

@@ -1,38 +1,96 @@
-import React from "react";
-
-// Example data for checked-in patients
-const patients = [
-  { id: 1, name: "John Doe", age: 30, room: "101", condition: "Stable" },
-  { id: 2, name: "Jane Smith", age: 45, room: "102", condition: "Critical" },
-  { id: 3, name: "Emily Johnson", age: 60, room: "103", condition: "Stable" },
-  { id: 4, name: "Michael Brown", age: 50, room: "104", condition: "Stable" },
-  { id: 5, name: "Linda Davis", age: 35, room: "105", condition: "Critical" },
-];
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./CheckedIn.css";
 
 export default function CheckedIn() {
+  const [patients, setPatients] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Fetch patients on mount
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const token = localStorage.getItem("token"); // or wherever you're storing it
+        const res = await axios.get(
+          "http://localhost:5000/api/doctor/patients?status=checked-in",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setPatients(res.data.patients);
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+      }
+    };
+
+    fetchPatients();
+  }, []);
+
+  // Handle checkout
+  const handleCheckout = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `http://localhost:5000/api/doctor/update-patient/${id}`,
+        { status: "checked-out" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setPatients((prev) => prev.filter((patient) => patient._id !== id));
+    } catch (error) {
+      console.error("Error checking out patient:", error);
+    }
+  };
+
+  // Filtered search
+  const filteredPatients = patients.filter((patient) =>
+    `${patient.name} ${patient.contactNumber}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="checked-in-container">
-      <h2>Checked-In Patients</h2>
-      <table className="patients-table">
-        <thead>
-          <tr>
-            <th>Patient Name</th>
-            <th>Age</th>
-            <th>Room</th>
-            <th>Condition</th>
-          </tr>
-        </thead>
-        <tbody>
-          {patients.map((patient) => (
-            <tr key={patient.id}>
-              <td>{patient.name}</td>
-              <td>{patient.age}</td>
-              <td>{patient.room}</td>
-              <td>{patient.condition}</td>
-            </tr>
+    <>
+      <div className="checked-in-container">
+        <input
+          className="search-bar"
+          type="text"
+          placeholder="Search by Patient Name / Contact no."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <h2 className="checked-in-title">Check In Patients:</h2>
+        <div className="patient-grid">
+          {filteredPatients.map((patient) => (
+            <div key={patient._id} className="patient-card">
+              <h3>{patient.name}</h3>
+              <p>
+                Visiting Date:{" "}
+                {new Date(patient.visitDate).toLocaleDateString()}
+              </p>
+              <p>
+                Recommended Stay:{" "}
+                {new Date(patient.recommendedStayDate).toLocaleDateString()}
+              </p>
+              <div className="card-buttons">
+                <button className="view-btn">View Details</button>
+                <button
+                  className="checkout-btn"
+                  onClick={() => handleCheckout(patient._id)}
+                >
+                  Check-out
+                </button>
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </div>
+      </div>
+    </>
   );
 }
