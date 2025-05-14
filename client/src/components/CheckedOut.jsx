@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CheckedIn.css";
+import BASE_URL from "./config";
 
 export default function CheckedOut() {
   const [patients, setPatients] = useState([]);
@@ -12,7 +13,7 @@ export default function CheckedOut() {
       try {
         const token = localStorage.getItem("token"); // or wherever you're storing it
         const res = await axios.get(
-          "https://hospital-management-system-ammf.onrender.com/api/doctor/patients?status=checked-out",
+          `${BASE_URL}/api/doctor/patients?status=checked-out`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,7 +34,7 @@ export default function CheckedOut() {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `https://hospital-management-system-ammf.onrender.com/api/doctor/update-patient/${id}`,
+        `${BASE_URL}/api/doctor/update-patient/${id}`,
         { status: "checked-out" },
         {
           headers: {
@@ -73,10 +74,6 @@ export default function CheckedOut() {
               <p>
                 Visiting Date:{" "}
                 {new Date(patient.visitDate).toLocaleDateString()}
-              </p>
-              <p>
-                Recommended Stay:{" "}
-                {new Date(patient.recommendedStayDate).toLocaleDateString()}
               </p>
               <div className="card-buttons">
                 <button className="view-btn">View Details</button>

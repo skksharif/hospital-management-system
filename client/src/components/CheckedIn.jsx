@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CheckedIn.css";
+import Swal from "sweetalert2";
+import BASE_URL from "./config";
 
 export default function CheckedIn() {
   const [patients, setPatients] = useState([]);
@@ -12,7 +14,7 @@ export default function CheckedIn() {
       try {
         const token = localStorage.getItem("token"); // or wherever you're storing it
         const res = await axios.get(
-          "https://hospital-management-system-ammf.onrender.com/api/doctor/patients?status=checked-in",
+          `${BASE_URL}/api/doctor/patients?status=checked-in`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,7 +35,7 @@ export default function CheckedIn() {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `https://hospital-management-system-ammf.onrender.com/api/doctor/update-patient/${id}`,
+        `${BASE_URL}/api/doctor/update-patient/${id}`,
         { status: "checked-out" },
         {
           headers: {
@@ -42,6 +44,14 @@ export default function CheckedIn() {
         }
       );
       setPatients((prev) => prev.filter((patient) => patient._id !== id));
+
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Patient Checked Out!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     } catch (error) {
       console.error("Error checking out patient:", error);
     }

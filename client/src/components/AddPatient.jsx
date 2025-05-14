@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./AddPatient.css";
 import Swal from "sweetalert2";
+import BASE_URL from "./config";
 
 export default function AddPatient() {
   const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ export default function AddPatient() {
 
     try {
       const response = await axios.post(
-        "https://hospital-management-system-ammf.onrender.com/api/doctor/add-patient",
+        `${BASE_URL}/api/doctor/add-patient`,
         formData,
         {
           headers: {
@@ -42,7 +43,7 @@ export default function AddPatient() {
       );
 
       Swal.fire({
-        position: "top-end",
+        position: "center",
         icon: "success",
         title: "Patient added successfully!",
         showConfirmButton: false,
@@ -183,16 +184,6 @@ export default function AddPatient() {
               type="text"
               name="treatment"
               value={formData.treatment}
-              onChange={handleChange}
-            />
-          </label>
-
-          <label className="full-width">
-            Medicines
-            <input
-              type="text"
-              name="medicines"
-              value={formData.medicines}
               onChange={handleChange}
             />
           </label>

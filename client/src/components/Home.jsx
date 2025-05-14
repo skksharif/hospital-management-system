@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import "./Home.css";
 import { CiSearch } from "react-icons/ci";
 import { MdHistory } from "react-icons/md";
+import BASE_URL from "./config";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,16 +15,14 @@ const Home = () => {
     const fetchPatients = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          "https://hospital-management-system-ammf.onrender.com/api/doctor/patients",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${BASE_URL}/api/doctor/patients`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setPatients(data.patients || []);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching patients:", error);
         setPatients([]);
@@ -58,7 +59,15 @@ const Home = () => {
               <h3>{patient.name}</h3>
               <p>Last Visit: {patient.lastVisit}</p>
               <p>Next Visit: {patient.nextVisit}</p>
-              <button className="history-button">
+              <button
+                className="history-button"
+                onClick={() => {
+                  const patientData = patients.find((p) => p._id === patient._id); // Fix find logic
+                  navigate(`/dashboard/patient-history/${patient._id}`, {
+                    state: { patient: patientData }, // Optional: pass extra data
+                  });
+                }}
+              >
                 <span className="clock-icon">
                   <MdHistory />
                 </span>

@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-// Hardcoded users
 const users = [
   {
     id: 1,
@@ -9,13 +8,6 @@ const users = [
     password: "admin123",
     role: "admin"
   },
-  {
-    id: 2,
-    name: "Dr. John",
-    email: "doctor@example.com",
-    password: "doc123",
-    role: "doctor"
-  }
 ];
 
 // Login controller
@@ -32,7 +24,7 @@ const login = (req, res) => {
       email: user.email,
       role: user.role
     },
-    "secret-key"
+    process.env.JWT_SECRET
   );
 
   res.json({ token, role: user.role, name: user.name });
