@@ -2,10 +2,10 @@ const jwt = require("jsonwebtoken");
 
 const users = [
   {
-    id: 1,
-    name: "Admin User",
-    email: "admin@example.com",
-    password: "admin123",
+    id: 2,
+    name: "Doctor",
+    email: "doctor@example.com",
+    password: "doc123",
     role: "doctor"
   },
 ];
