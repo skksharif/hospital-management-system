@@ -1,72 +1,73 @@
-/* Container */
+/* Base Container */
 .history-container {
-  padding: 2rem;
-  width: 100%;
+  padding: 2rem 1rem;
+  width: 1000px;
+  max-width: 1000px;
+  margin: 0 auto;
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .history-container h2 {
   margin-bottom: 2rem;
-  color: #333;
+  color: #2c3e50;
+  text-align: center;
+  font-size: 2rem;
 }
 
-/* Main card */
+/* Card Layout */
 .history-card {
   display: flex;
   flex-wrap: wrap;
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
   padding: 2rem;
-  width: 100%;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   gap: 2rem;
 }
 
-/* Left section */
+/* Left Section */
 .left-section {
-  flex: 1;
-  min-width: 250px;
-  border-right: 2px solid #d1d1d1;
+  flex: 1 1 280px;
+  border-right: 1px solid #e0e0e0;
   padding-right: 2rem;
 }
 
 .left-section h3 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   margin-bottom: 1rem;
-  color: #2e3d29;
+  color: #34495e;
 }
 
 .left-section p {
   margin: 0.5rem 0;
   font-size: 1rem;
-}
-
-/* Right section */
-.right-section {
-  flex: 2;
-  padding-left: 2rem;
-}
-
-.right-section p,
-.right-section ul {
-  margin-bottom: 1rem;
-  font-size: 1rem;
+  color: #444;
   line-height: 1.5;
 }
 
+/* Right Section */
+.right-section {
+  flex: 2 1 320px;
+  padding-left: 2rem;
+}
+
+.right-section p {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 0.8rem;
+}
+
 .right-section ul {
-  padding-left: 1.5rem;
+  padding-left: 1.2rem;
+  margin-bottom: 1.5rem;
 }
 
-.notes {
-  font-style: italic;
-  background-color: #f9f9f9;
-  padding: 0.5rem;
-  border-left: 4px solid #aaa;
+.right-section li {
+  margin-bottom: 0.5rem;
+  color: #333;
 }
 
-/* Buttons */
+/* Button Group */
 .button-group {
   display: flex;
   flex-direction: column;
@@ -75,33 +76,119 @@
 }
 
 .button-group button {
-  display: block;
-  margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
+  padding: 0.7rem 1.2rem;
   border: none;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .button-group button:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .visit-btn {
-  background-color: #f0f0f0;
+  background-color: #e0e0e0;
   color: #333;
   border: 1px solid #ccc;
 }
 
 .download-btn {
-  background-color: #4a7c27;
+  background-color: #2ecc71;
   color: #fff;
 }
 
-.share-btn {
-  background-color: #1877f2;
-  color: white;
+/* Loader */
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #4caf50;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 0.8s linear infinite;
+  margin: 4rem auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .history-container {
+    padding: 2rem 1rem;
+    width:100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .history-card {
+    flex-direction: column;
+  }
+  .history-container {
+    padding: 2rem 1rem;
+    width:100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  .left-section {
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding-right: 0;
+    padding-bottom: 2rem;
+  }
+
+  .right-section {
+    padding-left: 0;
+  }
+
+  .button-group {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .button-group button {
+    flex: 1 1 45%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-container {
+    padding: 2rem 1rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+  .history-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .left-section h3 {
+    font-size: 1.4rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
 }

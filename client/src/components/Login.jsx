@@ -8,9 +8,13 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    setLoading(true);
+    setError("");
     try {
       const res = await axios.post(`${BASE_URL}/api/login`, {
         email,
@@ -18,9 +22,11 @@ export default function Login() {
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
       setError("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,8 +54,17 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className="login-button" onClick={handleLogin}>Login</button>
-        {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
+        <button
+          className="login-button"
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? <div className="spinner"></div> : "Login"}
+        </button>
+
+        {error && (
+          <div style={{ color: "red", marginTop: "10px" }}>{error}</div>
+        )}
       </div>
     </div>
   );

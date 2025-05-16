@@ -22,7 +22,6 @@ const Home = () => {
         });
         const data = await response.json();
         setPatients(data.patients || []);
-        console.log(data);
       } catch (error) {
         console.error("Error fetching patients:", error);
         setPatients([]);
@@ -32,6 +31,11 @@ const Home = () => {
     };
     fetchPatients();
   }, []);
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-GB"); // dd/mm/yyyy
+  };
 
   const filteredPatients = patients.filter((patient) =>
     patient.name.toLowerCase().includes(search.toLowerCase())
@@ -51,20 +55,36 @@ const Home = () => {
       </div>
       <h2 className="section-title">Patient Details:</h2>
       {loading ? (
-        <p>Loading...</p>
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p>Loading...</p>
+        </div>
       ) : (
         <div className="card-grid">
           {filteredPatients.map((patient, index) => (
             <div className="patient-card" key={index}>
               <h3>{patient.name}</h3>
-              <p>Last Visit: {patient.lastVisit}</p>
-              <p>Next Visit: {patient.nextVisit}</p>
+              <p>
+                Last Visit:{" "}
+                {patient.visits?.length > 0
+                  ? formatDate(patient.visits[patient.visits.length - 1])
+                  : "N/A"}
+              </p>
+              <p>
+                Next Visit:{" "}
+                {patient.visits?.length > 1
+                  ? formatDate(patient.visits[patient.visits.length])
+                  : "N/A"}
+              </p>
+
               <button
                 className="history-button"
                 onClick={() => {
-                  const patientData = patients.find((p) => p._id === patient._id); // Fix find logic
+                  const patientData = patients.find(
+                    (p) => p._id === patient._id
+                  );
                   navigate(`/dashboard/patient-history/${patient._id}`, {
-                    state: { patient: patientData }, // Optional: pass extra data
+                    state: { patient: patientData },
                   });
                 }}
               >

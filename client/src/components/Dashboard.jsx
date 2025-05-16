@@ -14,10 +14,10 @@ import CheckedIn from "./CheckedIn";
 import CheckedOut from "./CheckedOut";
 import Home from "./Home";
 import AddPatient from "./AddPatient";
-import DeletePatient from "./DeletePatient";
 import "./Dashboard.css";
 import BASE_URL from "./config";
 import PatientHistory from "./PatientHistory";
+import VisitedOnce from "./VisitedOnce";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -55,6 +55,16 @@ export default function Dashboard() {
             <span>Patients</span>
           </NavLink>
           <NavLink
+            to="/dashboard/add-patient"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setSidebarOpen(false)}
+          >
+            <FaUserPlus />
+            <span>Add Patient</span>
+          </NavLink>
+          <NavLink
             to="/dashboard/checked-in"
             className={({ isActive }) =>
               isActive ? "nav-item active" : "nav-item"
@@ -74,25 +84,16 @@ export default function Dashboard() {
             <FaSignOutAlt />
             <span>Checked Out</span>
           </NavLink>
+
           <NavLink
-            to="/dashboard/add-patient"
-            className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
-            }
-            onClick={() => setSidebarOpen(false)}
-          >
-            <FaUserPlus />
-            <span>Add Patient</span>
-          </NavLink>
-          <NavLink
-            to="/dashboard/delete-patient"
+            to="/dashboard/visited-once"
             className={({ isActive }) =>
               isActive ? "nav-item active" : "nav-item"
             }
             onClick={() => setSidebarOpen(false)}
           >
             <FaUserMinus />
-            <span>Delete Patient</span>
+            <span>Visited Patients</span>
           </NavLink>
         </nav>
 
@@ -107,8 +108,8 @@ export default function Dashboard() {
           <Route path="patient-history/:id" element={<PatientHistory />} />
           <Route path="checked-in" element={<CheckedIn />} />
           <Route path="checked-out" element={<CheckedOut />} />
+          <Route path="visited-once" element={<VisitedOnce />} />
           <Route path="add-patient" element={<AddPatient />} />
-          <Route path="delete-patient" element={<DeletePatient />} />
         </Routes>
       </main>
     </div>

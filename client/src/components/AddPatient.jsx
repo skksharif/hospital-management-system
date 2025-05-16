@@ -9,12 +9,10 @@ export default function AddPatient() {
     name: "",
     age: "",
     contact: "",
+    aadharId: "",
     gender: "",
     treatment: "",
-    medicines: "",
-    notes: "",
     visitDate: "",
-    nextVisit: "",
     tips: "",
     prescribedBy: "",
     status: "checked-in",
@@ -31,16 +29,22 @@ export default function AddPatient() {
     e.preventDefault();
     setLoading(true);
 
+    const patientPayload = {
+      ...formData,
+      tips: formData.tips
+        ? formData.tips.split(",").map((tip) => tip.trim())
+        : [],
+      visits: [formData.visitDate],
+    };
+
+    delete patientPayload.visitDate;
+
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/doctor/add-patient`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/api/doctor/add-patient`, patientPayload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       Swal.fire({
         position: "center",
@@ -54,12 +58,10 @@ export default function AddPatient() {
         name: "",
         age: "",
         contact: "",
+        aadharId: "",
         gender: "",
         treatment: "",
-        medicines: "",
-        notes: "",
         visitDate: "",
-        nextVisit: "",
         tips: "",
         prescribedBy: "",
         status: "checked-in",
@@ -102,7 +104,6 @@ export default function AddPatient() {
               onChange={handleChange}
               min="0"
               max="120"
-              required
             />
           </label>
 
@@ -115,6 +116,18 @@ export default function AddPatient() {
               onChange={handleChange}
               pattern="[0-9]{10}"
               placeholder="10-digit number"
+              required
+            />
+          </label>
+
+          <label>
+            Aadhar ID
+            <input
+              type="text"
+              name="aadharId"
+              value={formData.aadharId}
+              onChange={handleChange}
+              placeholder="12-digit Aadhar number"
               required
             />
           </label>
@@ -146,23 +159,12 @@ export default function AddPatient() {
           </label>
 
           <label>
-            Next Visit
-            <input
-              type="date"
-              name="nextVisit"
-              value={formData.nextVisit}
-              onChange={handleChange}
-            />
-          </label>
-
-          <label>
             Prescribed By
             <input
               type="text"
               name="prescribedBy"
               value={formData.prescribedBy}
               onChange={handleChange}
-              required
             />
           </label>
 
@@ -172,9 +174,11 @@ export default function AddPatient() {
               name="status"
               value={formData.status}
               onChange={handleChange}
+              required
             >
               <option value="checked-in">Checked In</option>
               <option value="checked-out">Checked Out</option>
+              <option value="visited-once">Visited Once</option>
             </select>
           </label>
 
@@ -195,17 +199,6 @@ export default function AddPatient() {
               rows="2"
               placeholder="Comma-separated tips"
               value={formData.tips}
-              onChange={handleChange}
-            />
-          </label>
-
-          <label className="full-width">
-            Notes
-            <textarea
-              name="notes"
-              rows="3"
-              placeholder="Additional observations"
-              value={formData.notes}
               onChange={handleChange}
             />
           </label>

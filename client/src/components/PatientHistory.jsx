@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./PatientHistory.css";
 
@@ -6,7 +6,38 @@ export default function PatientHistory() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const patient = state?.patient;
+  const [patient, setPatient] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return isNaN(date)
+      ? "N/A"
+      : date.toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+  };
+
+  useEffect(() => {
+    const fetchPatient = async () => {
+      const data = state?.patient;
+      setTimeout(() => {
+        setPatient(data);
+        setLoading(false);
+      }, 500); // simulate load time
+    };
+
+    fetchPatient();
+  }, [state]);
+
+  if (loading) {
+    return (
+      <div className="history-container">
+        <div className="loader"></div>
+      </div>
+    );
+  }
 
   if (!patient) {
     return (
@@ -19,9 +50,9 @@ export default function PatientHistory() {
 
   return (
     <div className="history-container">
-      <h2>Patient History:</h2>
+      <h2>Patient History</h2>
       <div className="history-card">
-        {/* Left side */}
+        {/* Left section */}
         <div className="left-section">
           <h3>{patient.name}</h3>
           <p>
@@ -34,57 +65,62 @@ export default function PatientHistory() {
             <strong>Contact Info:</strong> {patient.contact}
           </p>
           <p>
-            <strong>Visit Date:</strong> {patient.visitDate}
+            <strong>Aadhar ID:</strong> {patient.aadharId}
+          </p>
+          <p>
+            <strong>Status:</strong> {patient.status}
+          </p>
+          <p>
+            <strong>Joining Date:</strong> {formatDate(patient.joiningDate)}
+          </p>
+          <p>
+            <strong>Discharge Date:</strong>{" "}
+            {patient.dischargeDate ? formatDate(patient.dischargeDate) : "N/A"}
+          </p>
+          <p>
+            <strong>Created At:</strong> {formatDate(patient.createdAt)}
+          </p>
+          <p>
+            <strong>Last Visit:</strong>{" "}
+            {patient.visits?.length ? formatDate(patient.visits.at(-1)) : "N/A"}
           </p>
 
           <div className="button-group">
             <button className="visit-btn">+ Add New Visit</button>
             <button className="download-btn">Download</button>
-            <button className="share-btn">Share</button>
           </div>
         </div>
 
-        {/* Right side */}
+        {/* Right section */}
         <div className="right-section">
-          <p>
-            <strong>Visit Date:</strong> {patient.visitDate}
-          </p>
           <p>
             <strong>Treatment:</strong> {patient.treatment || "N/A"}
           </p>
           <p>
-            <strong>Medicines:</strong>{" "}
-            {Array.isArray(patient.medicines)
-              ? patient.medicines.join(", ")
-              : patient.medicines || "N/A"}
-          </p>
-
-          <p>
-            <strong>Next Visit:</strong> {patient.nextVisit}
-          </p>
-
-          <p>
-            <strong>Notes:</strong>
-          </p>
-          <p className="notes">"{patient.notes || "No notes provided."}"</p>
-
-          <p>
-            <strong>Suggested Lifestyle Tips:</strong>
+            <strong>Visits:</strong>
           </p>
           <ul>
-            {patient.lifestyleTips?.length ? (
-              patient.lifestyleTips.map((tip, index) => (
-                <li key={index}>{tip}</li>
+            {patient.visits.length ? (
+              patient.visits.map((date, idx) => (
+                <li key={idx}>{formatDate(date)}</li>
               ))
             ) : (
-              <li>No lifestyle tips listed.</li>
+              <li>No visits recorded.</li>
             )}
           </ul>
-
           <p>
-            <strong>Prescribed By:</strong> Dr. {patient.doctor || "XXXXXXX"}
+            <strong>Tips:</strong>
           </p>
- 
+          <ul>
+            {Array.isArray(patient.tips) && patient.tips.length ? (
+              patient.tips.map((tip, index) => <li key={index}>{tip}</li>)
+            ) : (
+              <li>No tips provided.</li>
+            )}
+          </ul>
+          <p>
+            <strong>Prescribed By:</strong> Dr. {patient.prescribedBy || "N/A"}
+          </p>
         </div>
       </div>
     </div>
