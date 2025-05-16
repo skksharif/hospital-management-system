@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CheckedIn.css";
 import BASE_URL from "./config";
+import { useNavigate } from "react-router-dom";
 
 export default function CheckedOut() {
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   // Fetch patients on mount
   useEffect(() => {
@@ -72,11 +74,33 @@ export default function CheckedOut() {
             <div key={patient._id} className="patient-card">
               <h3>{patient.name}</h3>
               <p>
-                Visiting Date:{" "}
-                {new Date(patient.visitDate).toLocaleDateString()}
+                Visited Date:{" "}
+                {patient.visits?.[0]
+                  ? new Date(patient.visits[0]).toLocaleDateString()
+                  : "N/A"}
               </p>
+
+              <p>
+                Checkout Date:{" "}
+                {patient.dischargeDate
+                  ? new Date(patient.dischargeDate).toLocaleDateString()
+                  : "N/A"}
+              </p>
+
               <div className="card-buttons">
-                <button className="view-btn">View Details</button>
+                <button
+                  className="view-btn"
+                  onClick={() => {
+                    const patientData = patients.find(
+                      (p) => p._id === patient._id
+                    );
+                    navigate(`/dashboard/patient-history/${patient._id}`, {
+                      state: { patient: patientData },
+                    });
+                  }}
+                >
+                  View Details
+                </button>
               </div>
             </div>
           ))}

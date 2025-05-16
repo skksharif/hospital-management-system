@@ -3,10 +3,12 @@ import axios from "axios";
 import "./CheckedIn.css";
 import Swal from "sweetalert2";
 import BASE_URL from "./config";
+import { useNavigate } from "react-router-dom";
 
 export default function CheckedIn() {
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   // Fetch patients on mount
   useEffect(() => {
@@ -89,7 +91,19 @@ export default function CheckedIn() {
                 {new Date(patient.recommendedStayDate).toLocaleDateString()}
               </p>
               <div className="card-buttons">
-                <button className="view-btn">View Details</button>
+                <button
+                  className="view-btn"
+                  onClick={() => {
+                    const patientData = patients.find(
+                      (p) => p._id === patient._id
+                    );
+                    navigate(`/dashboard/patient-history/${patient._id}`, {
+                      state: { patient: patientData },
+                    });
+                  }}
+                >
+                  View Details
+                </button>
                 <button
                   className="checkout-btn"
                   onClick={() => handleCheckout(patient._id)}

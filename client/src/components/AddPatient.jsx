@@ -177,7 +177,6 @@ export default function AddPatient() {
               required
             >
               <option value="checked-in">Checked In</option>
-              <option value="checked-out">Checked Out</option>
               <option value="visited-once">Visited Once</option>
             </select>
           </label>

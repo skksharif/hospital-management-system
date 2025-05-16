@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import BASE_URL from "./config";
 import "./PatientHistory.css";
 
 export default function PatientHistory() {
@@ -8,6 +10,9 @@ export default function PatientHistory() {
 
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return isNaN(date)
@@ -19,16 +24,53 @@ export default function PatientHistory() {
         });
   };
 
-  useEffect(() => {
-    const fetchPatient = async () => {
-      const data = state?.patient;
-      setTimeout(() => {
-        setPatient(data);
-        setLoading(false);
-      }, 500); // simulate load time
-    };
+  const fetchPatientFromDB = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${BASE_URL}/api/doctor/get-patient/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPatient(res.data);
+    } catch (error) {
+      console.error("Error fetching patient:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchPatient();
+  const handleAddNextVisit = async () => {
+    if (!selectedDate) return alert("Please select a date");
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Fetching....");
+      await axios.patch(
+        `${BASE_URL}/api/doctor/update-patient/${patient._id}`,
+        {
+          $push: { visits: [selectedDate] },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      fetchPatientFromDB(patient._id);
+
+      setShowDatePicker(false);
+      setSelectedDate("");
+    } catch (error) {
+      console.error("Error adding next visit:", error);
+    }
+  };
+
+  useEffect(() => {
+    const patientData = state?.patient;
+    if (patientData?._id) {
+      fetchPatientFromDB(patientData._id);
+    } else {
+      setLoading(false);
+    }
   }, [state]);
 
   if (loading) {
@@ -47,6 +89,10 @@ export default function PatientHistory() {
       </div>
     );
   }
+
+  const visits = patient.visits || [];
+  const nextVisit = visits.length ? visits[visits.length - 1] : null;
+  const previousVisits = visits.length > 1 ? visits.slice(0, -1) : [];
 
   return (
     <div className="history-container">
@@ -81,12 +127,49 @@ export default function PatientHistory() {
             <strong>Created At:</strong> {formatDate(patient.createdAt)}
           </p>
           <p>
-            <strong>Last Visit:</strong>{" "}
-            {patient.visits?.length ? formatDate(patient.visits.at(-1)) : "N/A"}
+            Next Visit:{" "}
+            {patient.dischargeDate
+              ? "Discharged"
+              : patient.visits?.length > 1 &&
+                new Date(
+                  patient.visits[patient.visits.length - 1]
+                ).toDateString() !==
+                  new Date(patient.joiningDate).toDateString()
+              ? formatDate(patient.visits[patient.visits.length - 1])
+              : "Not Decided"}
           </p>
 
           <div className="button-group">
-            <button className="visit-btn">+ Add New Visit</button>
+            {patient.dischargeDate || patient.status === "visited-once" ? (
+              <button className="next-visit-btn" disabled>
+                {patient.dischargeDate ? "Discharged" : "Visited Once"}
+              </button>
+            ) : showDatePicker ? (
+              <div className="date-picker-wrapper">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+                <button className="confirm-btn" onClick={handleAddNextVisit}>
+                  Confirm
+                </button>
+                <button
+                  className="cancel-btn"
+                  onClick={() => setShowDatePicker(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                className="next-visit-btn"
+                onClick={() => setShowDatePicker(true)}
+              >
+                Add Next Visit
+              </button>
+            )}
+
             <button className="download-btn">Download</button>
           </div>
         </div>
@@ -97,15 +180,15 @@ export default function PatientHistory() {
             <strong>Treatment:</strong> {patient.treatment || "N/A"}
           </p>
           <p>
-            <strong>Visits:</strong>
+            <strong>Previous Visits:</strong>
           </p>
           <ul>
-            {patient.visits.length ? (
-              patient.visits.map((date, idx) => (
+            {previousVisits.length ? (
+              previousVisits.map((date, idx) => (
                 <li key={idx}>{formatDate(date)}</li>
               ))
             ) : (
-              <li>No visits recorded.</li>
+              <li>No earlier visits recorded.</li>
             )}
           </ul>
           <p>

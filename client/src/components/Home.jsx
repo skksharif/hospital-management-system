@@ -21,6 +21,7 @@ const Home = () => {
           },
         });
         const data = await response.json();
+        console.log(data);
         setPatients(data.patients || []);
       } catch (error) {
         console.error("Error fetching patients:", error);
@@ -65,16 +66,24 @@ const Home = () => {
             <div className="patient-card" key={index}>
               <h3>{patient.name}</h3>
               <p>
-                Last Visit:{" "}
+                Joining Date:{" "}
                 {patient.visits?.length > 0
-                  ? formatDate(patient.visits[patient.visits.length - 1])
+                  ? formatDate(patient.visits[0])
                   : "N/A"}
               </p>
               <p>
                 Next Visit:{" "}
-                {patient.visits?.length > 1
-                  ? formatDate(patient.visits[patient.visits.length])
-                  : "N/A"}
+                {patient.dischargeDate
+                  ? "Discharged"
+                  : patient.status === "visited-once"
+                  ? "Visited Once"
+                  : patient.visits?.length > 1 &&
+                    new Date(
+                      patient.visits[patient.visits.length - 1]
+                    ).toDateString() !==
+                      new Date(patient.joiningDate).toDateString()
+                  ? formatDate(patient.visits[patient.visits.length - 1])
+                  : "Not Decided"}
               </p>
 
               <button

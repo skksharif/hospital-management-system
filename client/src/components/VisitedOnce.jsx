@@ -3,10 +3,12 @@ import axios from "axios";
 import "./CheckedIn.css"; // Reuse the same CSS
 import Swal from "sweetalert2";
 import BASE_URL from "./config";
+import { useNavigate } from "react-router-dom";
 
 export default function VisitedOnce() {
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVisitedPatients = async () => {
@@ -20,6 +22,7 @@ export default function VisitedOnce() {
             },
           }
         );
+        console.log(res.data.patients);
         setPatients(res.data.patients);
       } catch (error) {
         console.error("Error fetching visited-once patients:", error);
@@ -52,14 +55,25 @@ export default function VisitedOnce() {
             <h3>{patient.name}</h3>
             <p>
               Visiting Date:{" "}
-              {new Date(patient.visitDate).toLocaleDateString()}
+              {patient.visits?.[0]
+                ? new Date(patient.visits[0]).toLocaleDateString()
+                : "N/A"}
             </p>
-            <p>
-              Recommended Stay:{" "}
-              {new Date(patient.recommendedStayDate).toLocaleDateString()}
-            </p>
+
             <div className="card-buttons">
-              <button className="view-btn">View Details</button>
+              <button
+                className="view-btn"
+                onClick={() => {
+                  const patientData = patients.find(
+                    (p) => p._id === patient._id
+                  );
+                  navigate(`/dashboard/patient-history/${patient._id}`, {
+                    state: { patient: patientData },
+                  });
+                }} disable
+              >
+                View Details
+              </button>
             </div>
           </div>
         ))}

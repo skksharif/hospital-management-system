@@ -19,7 +19,6 @@ router.post("/add-patient", verifyToken(["doctor"]), async (req, res) => {
       status,
       visits,
     } = req.body;
-    
 
     if (!["checked-in", "checked-out", "visited-once"].includes(status)) {
       return res.status(400).json({ message: "Here only or missing status" });
@@ -47,28 +46,40 @@ router.post("/add-patient", verifyToken(["doctor"]), async (req, res) => {
 });
 
 // Update patient by ID
-router.patch("/update-patient/:id", verifyToken(["doctor"]), async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
+router.patch(
+  "/update-patient/:id",
+  verifyToken(["doctor"]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
 
-    if (updates.status === "checked-out") {
-      updates.dischargeDate = new Date();
+      if (updates.status === "checked-out") {
+        updates.dischargeDate = new Date();
+      }
+      
+      if (updates.$push?.visits) {
+        await Patient.findByIdAndUpdate(id, {
+          $push: { visits: updates.$push.visits },
+        });
+        delete updates.$push;
+      }
+
+      const updated = await Patient.findByIdAndUpdate(id, updates, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!updated)
+        return res.status(404).json({ message: "Patient not found" });
+
+      res.json({ message: "Patient updated", patient: updated });
+    } catch (err) {
+      console.error("Update error:", err);
+      res.status(500).json({ message: "Server error" });
     }
-
-    const updated = await Patient.findByIdAndUpdate(id, updates, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) return res.status(404).json({ message: "Patient not found" });
-
-    res.json({ message: "Patient updated", patient: updated });
-  } catch (err) {
-    console.error("Update error:", err);
-    res.status(500).json({ message: "Server error" });
   }
-});
+);
 
 // Get all patients or filter by status
 router.get("/patients", verifyToken(["doctor"]), async (req, res) => {
@@ -91,5 +102,22 @@ router.get("/patients", verifyToken(["doctor"]), async (req, res) => {
   }
 });
 
+// New route to get a specific patient by ID
+router.get("/get-patient/:id", verifyToken(["doctor"]), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const patient = await Patient.findById(id);
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res.json(patient);
+  } catch (err) {
+    console.error("Fetch single patient error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 module.exports = router;
+
