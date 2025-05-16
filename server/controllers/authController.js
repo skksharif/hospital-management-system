@@ -24,7 +24,7 @@ const login = (req, res) => {
       email: user.email,
       role: user.role
     },
-    process.env.JWT_SECRET
+    "secret-key"
   );
 
   res.json({ token, role: user.role, name: user.name });
