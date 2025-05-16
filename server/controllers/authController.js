@@ -6,7 +6,7 @@ const users = [
     name: "Admin User",
     email: "admin@example.com",
     password: "admin123",
-    role: "admin"
+    role: "doctor"
   },
 ];
 
